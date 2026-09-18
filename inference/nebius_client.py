@@ -28,5 +28,5 @@ if __name__ == "__main__":
     test_messages = [
         {"role": "user", "content": "Say hello in one sentence"}
     ]
-    response_text = call_nemotron(test_messages, "serviceaccount-e00jxwjhaf3sphvvzq")
+    response_text = call_nemotron(test_messages, "nvidia/Nemotron-3-Ultra-550b-a55b")
     print(f"Response: {response_text}")

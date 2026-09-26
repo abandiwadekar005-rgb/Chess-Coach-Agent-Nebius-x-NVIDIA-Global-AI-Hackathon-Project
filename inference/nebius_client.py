@@ -5,8 +5,8 @@ from openai import OpenAI
 load_dotenv()
 
 client = OpenAI(
-    base_url="https://api.tokenfactory.nebius.com/v1/",
-    api_key=os.getenv("NEBIUS_API_KEY")
+    base_url="",
+    api_key=os.getenv("")
 )
 
 def call_nemotron(messages, model):

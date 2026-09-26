@@ -14,47 +14,36 @@ def parse_pgn(pgn_text):
 
 
 def game_phase(move_number, total_moves):
-    """Categorize the stage of the game."""
+    """Categorize the stage of the game by move count."""
     if total_moves <= 0:
-        return "Opening"
+        return "opening"
 
-    ratio = move_number / total_moves
-    if ratio < 0.3:
-        return "Opening"
-    elif ratio < 0.7:
-        return "Middlegame"
+    if move_number < 15:
+        return "opening"
+    elif move_number > total_moves - 15:
+        return "endgame"
     else:
-        return "Endgame"
+        return "middlegame"
 
 
 def score_for_player(engine, board, player_color):
     """
-    Convert Stockfish evaluation into the player's perspective.
+    Convert Stockfish evaluation into the target player's perspective.
 
-    Stockfish returns a value relative to the side to move.
-    We normalize it so positive means the selected player is better.
+    In the installed Stockfish package behavior, the raw evaluation is already
+    expressed relative to White in the simple test case used for verification.
+    We therefore only flip the sign when the target player is Black.
     """
     evaluation = engine.get_evaluation()
     value = evaluation["value"]
 
-    # If the score is mate, convert it to a large centipawn-like scale
     if evaluation["type"] == "mate":
         value = value * 1000
 
-    # White perspective on the current board
-    white_perspective = value if board.turn == board.ROOT or board.turn else -value
-    # The above is intentionally simple and safe for board.turn semantics,
-    # but the clearer version is below:
+    if player_color == "black":
+        value = -value
 
-    # board.turn is True for White, False for Black
-    white_perspective = value if board.turn else -value
-
-    if player_color == "white":
-        return white_perspective
-    elif player_color == "black":
-        return -white_perspective
-    else:
-        raise ValueError("player_color must be 'white' or 'black'")
+    return value
 
 
 def analyze_game(pgn_text, player_color):
@@ -100,16 +89,18 @@ def analyze_game(pgn_text, player_color):
         eval_loss = before_score - after_score
 
         if eval_loss > BLUNDER_THRESHOLD:
-            # Look at the position before the move to compute the best move
+            # Look at the position before the move to compute the best move.
+            # This is the pre-move position the player actually faced.
             board.pop()
-            stockfish.set_fen_position(board.fen())
+            pre_move_fen = board.fen()
+            stockfish.set_fen_position(pre_move_fen)
             best_move = stockfish.get_best_move()
 
             # Restore board state for the next iteration
             board.push(move)
 
             results.append({
-                "fen": board.fen(),
+                "fen": pre_move_fen,
                 "move": move.uci(),
                 "eval_loss": eval_loss,
                 "phase": game_phase(i + 1, total_moves),

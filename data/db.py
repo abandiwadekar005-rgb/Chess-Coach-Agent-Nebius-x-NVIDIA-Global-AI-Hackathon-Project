@@ -1,6 +1,6 @@
 from chess import Board, PGN
 import chess.pgn
-from chess import Board, PGN
+from stockfish import Stockfish
 
 def parse_pgn(pgn_text):
     import io
@@ -66,7 +66,6 @@ def analyze_game(pgn_text, player_color):
             eval_after_dict = stockfish.get_evaluation()
             eval_after = eval_after_dict['value'] if eval_after_dict['type'] == 'cp' else 0
 
-            # LOGIC FIX: 
             # If it was White's turn, a 'good' eval is positive. 
             # If White plays a move that makes eval go from +100 to -50, loss is 150.
             # If it was Black's turn, a 'good' eval is negative.
@@ -89,7 +88,7 @@ def analyze_game(pgn_text, player_color):
             # If White's advantage drops by 200, eval_loss = 200.
             # If Black's advantage drops by 200, eval_loss = 200.
             
-            # Correcting the math for Stockfish's "relative to side to move" evaluation:
+            # Math for Stockfish's "relative to side to move" evaluation:
             # If White moves: loss = eval_before - eval_after
             # If Black moves: loss = eval_after - eval_before (because Black's eval is negative)
             

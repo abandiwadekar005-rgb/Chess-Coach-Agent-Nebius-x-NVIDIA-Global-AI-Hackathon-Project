@@ -83,8 +83,7 @@ def analyze_game(pgn_text, player_color):
                 # Note: In stockfish, 'value' is relative to side to move. 
                 # This is tricky. A safer way is to always convert to White's perspective:
                 
-            # REVISED SIMPLE LOGIC:
-            # Let's assume 'eval_loss' is the drop in the player's own advantage.
+            # 'eval_loss' is the drop in the player's own advantage.
             # If White's advantage drops by 200, eval_loss = 200.
             # If Black's advantage drops by 200, eval_loss = 200.
             
@@ -124,3 +123,9 @@ def analyze_game(pgn_text, player_color):
             board.push(move)
 
     return results
+
+def analyze_multiple_games(pgn_texts, player_color):
+    all_results = []
+    for pgn in pgn_texts:
+        all_results.extend(analyze_game(pgn, player_color))
+    return all_results

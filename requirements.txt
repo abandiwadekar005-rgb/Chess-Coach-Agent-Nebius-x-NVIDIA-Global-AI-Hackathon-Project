@@ -1,0 +1,7 @@
+streamlit>=1.40
+openai>=1.50
+chess>=1.10
+stockfish>=3.28
+python-dotenv>=1.0
+requests>=2.31
+pandas>=2.0

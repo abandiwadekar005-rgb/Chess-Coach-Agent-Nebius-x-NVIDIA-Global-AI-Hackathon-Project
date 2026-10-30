@@ -1,0 +1,18 @@
+# secrets
+.env
+.streamlit/secrets.toml
+
+# python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# local data
+chess_coach.db
+*.db
+
+# engine binaries you download locally
+stockfish*.exe
+stockfish/
